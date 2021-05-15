@@ -24,15 +24,15 @@ namespace CSharp.Controllers
 
         // GET api/orders
         [HttpGet]
-        public ActionResult<List<Order>> Get([FromQuery]string name)
+        public ActionResult<List<Order>> Get([FromQuery] string name)
         {
             var orders = _service.GetOrders();
 
             if (!string.IsNullOrEmpty(name))
             {
-                orders = orders.Where(o => o.CustomerName.ToLower()==(name.ToLower())).ToList();
+                orders = orders.Where(o => o.CustomerName.ToLower() == (name.ToLower())).ToList();
             }
-                 
+
             return Ok(orders);
         }
 
@@ -75,6 +75,22 @@ namespace CSharp.Controllers
 
             _service.Remove(id);
             return Ok();
+        }
+
+        // Put Update order with order id
+        [HttpPut("{id}")]
+        public ActionResult Put(int id, [FromBody]Order updatedOrder)
+        {
+            var existingItem = _service.GetById(id);
+            
+            if(existingItem == null)
+            {
+                return NotFound();
+            }
+
+            _service.Update(updatedOrder);
+            return Ok(updatedOrder);
+
         }
     }
 }

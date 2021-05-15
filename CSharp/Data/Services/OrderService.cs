@@ -64,5 +64,15 @@ namespace CSharp.Data.Services
             _orders.Add(newOrder);
             return newOrder;
         }
+     
+
+        public Order Update(Order updatedOrder)
+        {
+            var oldOrder = _orders.FirstOrDefault(o => o.Id == updatedOrder.Id);
+            oldOrder.CustomerName = updatedOrder.CustomerName;
+
+            return updatedOrder;
+        }
+
     }
 }

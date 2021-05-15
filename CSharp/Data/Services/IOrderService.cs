@@ -12,5 +12,7 @@ namespace CSharp.Data.Services
         Order Add(Order newOrder);
         Order GetById(int id);
         void Remove(int id);
+
+        Order Update(Order updatedOrder);
     }
 }
