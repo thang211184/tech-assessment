@@ -24,10 +24,16 @@ namespace CSharp.Controllers
 
         // GET api/orders
         [HttpGet]
-        public ActionResult<IEnumerable<Order>> Get()
+        public ActionResult<List<Order>> Get([FromQuery]string name)
         {
-            var items = _service.GetOrders();
-            return Ok(items);
+            var orders = _service.GetOrders();
+
+            if (!string.IsNullOrEmpty(name))
+            {
+                orders = orders.Where(o => o.CustomerName.ToLower()==(name.ToLower())).ToList();
+            }
+                 
+            return Ok(orders);
         }
 
         // GET: api/Orders/id

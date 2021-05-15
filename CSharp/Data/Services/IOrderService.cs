@@ -8,7 +8,7 @@ namespace CSharp.Data.Services
 {
     public interface IOrderService
     {
-        IEnumerable<Order> GetOrders();
+        List<Order> GetOrders();
         Order Add(Order newOrder);
         Order GetById(int id);
         void Remove(int id);

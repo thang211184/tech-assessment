@@ -9,6 +9,6 @@ namespace CSharp.Data.Models
     {
         public int Id { get; set; }
         public string CustomerName { get; set; }
-        public bool IsCanceled { get; set; }
+        
     }
 }

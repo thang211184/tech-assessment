@@ -18,47 +18,51 @@ namespace CSharp.Data.Services
                 {
                     Id = 1,
                     CustomerName = "test1",
-                    IsCanceled = false,
+                    
                 },
                 new Order()
                 {
                     Id = 2,
                     CustomerName = "test2",
-                    IsCanceled = false,
+                    
                 },
                 new Order()
                 {
                     Id = 3,
                     CustomerName = "test3",
-                    IsCanceled = false,
+                    
+                },
+                new Order()
+                {
+                    Id = 4,
+                    CustomerName = "test2",
+
                 }
             };
 
         }
     
-
-        public Order add(Order newOrder)
-        {
-            _orders.Add(newOrder);
-            return newOrder;
-        }
-
+        //Get by Id
         public Order GetById(int id) => _orders.Where(a => a.Id == id).FirstOrDefault();
 
+        // Cancel order
         public void Remove(int id)
         {
             var existing = _orders.First(a => a.Id == id);
             _orders.Remove(existing);
         }
 
-        public IEnumerable<Order> GetOrders()
+        // Get all
+        public List<Order> GetOrders()
         {
             return _orders;
         }
 
+        // Add new order
         public Order Add(Order newOrder)
         {
-            throw new NotImplementedException();
+            _orders.Add(newOrder);
+            return newOrder;
         }
     }
 }
