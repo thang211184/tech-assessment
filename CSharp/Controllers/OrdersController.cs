@@ -2,10 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using CSharp.Data.Models;
+using CSharp.Data.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using CSharp.Model;
+
 
 namespace CSharp.Controllers
 {
@@ -13,101 +15,60 @@ namespace CSharp.Controllers
     [ApiController]
     public class OrdersController : ControllerBase
     {
-        private readonly OrdersContext _context;
+        private readonly IOrderService _service;
 
-        public OrdersController(OrdersContext context)
+        public OrdersController(IOrderService service)
         {
-            _context = context;
+            _service = service;
         }
 
-        // GET: api/Orders
+        // GET api/orders
         [HttpGet]
-        public async Task<ActionResult> GetOrders([FromQuery] OrderQueryParameters queryParameters)
+        public ActionResult<IEnumerable<Order>> Get()
         {
-            IQueryable<Order> orders = _context.Orders;
-            if (!string.IsNullOrEmpty(queryParameters.name))
-            {
-                orders = orders.Where(o => o.CustomerName.ToLower().Contains(queryParameters.name.ToLower()));
-            }
-            return Ok(await orders.ToArrayAsync());
+            var items = _service.GetOrders();
+            return Ok(items);
         }
 
         // GET: api/Orders/id
         [HttpGet("{id}")]
-        public async Task<ActionResult<Order>> GetOrder(int id)
+        public ActionResult<Order> Get(int id)
         {
-            var order = await _context.Orders.FindAsync(id);
-
-            if (order == null)
+            var item = _service.GetById(id);
+            if (item == null)
             {
                 return NotFound();
             }
 
-            return order;
+            return Ok(item);
         }
 
-        
-
-        // PUT: api/Orders/id
-        
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutOrder(int id, Order order)
-        {
-            if (id != order.Id)
-            {
-                return BadRequest();
-            }
-
-            _context.Entry(order).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!OrderExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return NoContent();
-        }
-
-        // POST: api/Orders
+        // Post api/orders
         [HttpPost]
-        public async Task<ActionResult<Order>> PostOrder(Order order)
+        public ActionResult Post([FromBody] Order value)
         {
-            _context.Orders.Add(order);
-            await _context.SaveChangesAsync();
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
 
-            return CreatedAtAction("GetOrder", new { id = order.Id }, order);
+            var item = _service.Add(value);
+            return CreatedAtAction("Get", new { id = item.Id }, item);
         }
 
-        // DELETE: api/Orders/5
+        // Delete api/orders/id
         [HttpDelete("{id}")]
-        public async Task<ActionResult<Order>> DeleteOrder(int id)
+        public ActionResult Remove(int id)
         {
-            var order = await _context.Orders.FindAsync(id);
-            if (order == null)
+            var existingItem = _service.GetById(id);
+
+            if (existingItem == null)
             {
                 return NotFound();
             }
 
-            _context.Orders.Remove(order);
-            await _context.SaveChangesAsync();
-
-            return order;
-        }
-
-        private bool OrderExists(int id)
-        {
-            return _context.Orders.Any(e => e.Id == id);
+            _service.Remove(id);
+            return Ok();
         }
     }
 }
